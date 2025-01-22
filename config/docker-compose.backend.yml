@@ -18,5 +18,5 @@ services:
     environment:
       DEBUG: "1"
       SECRET_KEY: "${SECRET_KEY}"
-      DJANGO_ALLOWED_HOSTS: "localhost 127.0.0.1"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
       DATABASE_URL: "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
