@@ -17,12 +17,12 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='fallback_key')
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='fallback_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool, default=True)
+DEBUG = config('DJANGO_DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split()
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
 
 
 # Application definition

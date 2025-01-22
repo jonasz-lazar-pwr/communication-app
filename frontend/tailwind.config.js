@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit', // Włącza Just-In-Time Compilation
-  purge: ['./src/**/*.{html,ts}'], // Ścieżki do plików Angulara
-  darkMode: false,
+  content: ['./src/**/*.{html,ts}'], // Ścieżki do plików Angulara
   theme: {
     extend: {},
   },

@@ -1,29 +1,75 @@
-# Bazowy obraz
-FROM python:3.11-slim
+# Etap budowania zależności
+FROM python:3.11-alpine AS build-stage
 
 # Ustawienia środowiska
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Instalacja zależności systemowych
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Instalacja narzędzi i zależności wymaganych do budowania
+RUN apk add --no-cache gcc musl-dev libpq-dev
 
 # Ustaw katalog roboczy
 WORKDIR /app
 
-# Instalacja zależności Pythona
-COPY requirements.txt /app/
+# Kopiowanie pliku z zależnościami
+COPY requirements.txt ./
+
+# Instalacja zależności
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kopiowanie aplikacji
-COPY . /app/
+# Etap finalny
+FROM python:3.11-alpine
 
-# Port dla serwera Django
+# Ustawienia środowiska
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Ustaw katalog roboczy
+WORKDIR /app
+
+# Kopiowanie zależności z etapu budowania
+COPY --from=build-stage /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=build-stage /usr/local/bin /usr/local/bin
+
+# Kopiowanie kodu aplikacji
+COPY . .
+
+# Otwórz port dla aplikacji
 EXPOSE 8000
 
+# Usuń tymczasowe pliki i cache (opcjonalne, na wypadek dodatkowych buildów)
+RUN rm -rf /root/.cache
+
 # Komenda startowa
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+
+
+## Bazowy obraz
+#FROM python:3.11-slim
+#
+## Ustawienia środowiska
+#ENV PYTHONDONTWRITEBYTECODE=1
+#ENV PYTHONUNBUFFERED=1
+#
+## Instalacja zależności systemowych
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    build-essential \
+#    libpq-dev \
+#    && apt-get clean \
+#    && rm -rf /var/lib/apt/lists/*
+#
+## Ustaw katalog roboczy
+#WORKDIR /app
+#
+## Instalacja zależności Pythona
+#COPY requirements.txt ./
+#RUN pip install --no-cache-dir -r requirements.txt
+#
+## Kopiowanie aplikacji
+#COPY . .
+#
+## Port dla serwera Django
+#EXPOSE 8000
+#
+## Komenda startowa
+#CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0::8000"]

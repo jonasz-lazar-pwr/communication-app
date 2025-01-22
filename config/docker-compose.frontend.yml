@@ -1,14 +1,15 @@
-version: '3.8'
-
 services:
   frontend:
+    image: frontend
+    container_name: frontend
     build:
       context: ../frontend
       dockerfile: Dockerfile
-    container_name: communication_app_frontend
+    command: "npm start"
     volumes:
       - ../frontend:/app
       - /app/node_modules
     ports:
       - "4200:4200"
-    command: "npm start"
+    environment:
+      - NODE_ENV=development

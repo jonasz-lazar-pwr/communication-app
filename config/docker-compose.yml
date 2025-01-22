@@ -1,51 +1,51 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:17
-    container_name: communication_app_db
+  database:
+    image: postgres:15-alpine
+    container_name: postgres
     environment:
-      POSTGRES_DB: communication_app_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    env_file:
+      - .env
 
   backend:
+    image: backend
+    container_name: backend
     build:
       context: ../backend
       dockerfile: Dockerfile
-    container_name: communication_app_backend
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ../backend:/app
     ports:
       - "8000:8000"
-    depends_on:
-      - db
     env_file:
-      - ../backend/.env
-    environment:
-      DEBUG: "1"
-      SECRET_KEY: "${SECRET_KEY}"
-      DJANGO_ALLOWED_HOSTS: "localhost 127.0.0.1"
-      DATABASE_URL: "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+      - .env
+    depends_on:
+      - database
 
   frontend:
+    image: frontend
+    container_name: frontend
     build:
       context: ../frontend
       dockerfile: Dockerfile
-    container_name: communication_app_frontend
+    command: "npm start"
     volumes:
       - ../frontend:/app
       - /app/node_modules
     ports:
       - "4200:4200"
-    command: "npm start"
+    environment:
+      - NODE_ENV=development
     depends_on:
       - backend
 
