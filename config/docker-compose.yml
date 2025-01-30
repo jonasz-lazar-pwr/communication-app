@@ -20,13 +20,16 @@ services:
       context: ../backend
       dockerfile: Dockerfile
     command: >
-      sh -c "python manage.py makemigrations &&
+      sh -c "python manage.py makemigrations users conversations &&
              python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+             python manage.py runserver_plus 0.0.0.0:8000"
     volumes:
       - ../backend:/app
+      - ./certs:/certs
     ports:
       - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "True"
     env_file:
       - .env
     depends_on:
@@ -42,6 +45,7 @@ services:
     volumes:
       - ../frontend:/app
       - /app/node_modules
+      - ./certs:/certs
     ports:
       - "4200:4200"
     environment:

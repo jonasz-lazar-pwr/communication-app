@@ -31,7 +31,7 @@ class Contact(models.Model):
 
     def __str__(self):
         """Return a string representation of the contact."""
-        return f"Contact between {self.user1} and {self.user2}"
+        return f"contact between {self.user1.username} and {self.user2.username}"
 
 
 class Conversation(models.Model):
@@ -48,7 +48,7 @@ class Conversation(models.Model):
 
     def __str__(self):
         """Return a string representation of the conversation."""
-        return f"Conversation for contact {self.contact}"
+        return f"conversation for {self.contact}"
 
 
 class Message(models.Model):
@@ -71,4 +71,4 @@ class Message(models.Model):
 
     def __str__(self):
         """Return a string representation of the message."""
-        return f"Message from {self.sender} in {self.conversation}"
+        return f"message from {self.sender.username} in conversation: {self.conversation}"

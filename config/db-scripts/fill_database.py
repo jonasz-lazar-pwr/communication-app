@@ -8,14 +8,13 @@ from conversations.models import Contact, Conversation, Message
 # Tworzenie użytkowników
 users = []
 for i in range(1, 6):
-    user = User.objects.create(
+    user = User.objects.create_user(
         username=f"user{i}",
         email=f"user{i}@example.com",
         phone_number=f"123456789{i}",
-        password_hash=f"hashed_password_{i}",
+        password=f"Password123!",
         first_name=f"First{i}",
         last_name=f"Last{i}",
-        profile_picture=None,
     )
     users.append(user)
 
